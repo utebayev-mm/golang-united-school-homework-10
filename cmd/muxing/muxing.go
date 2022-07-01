@@ -72,8 +72,7 @@ func Header(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	fmt.Println(r.Header)
 	sum := a + b
 	result := fmt.Sprint(sum)
-	w.Header().Add("a+b", result)
+	w.Header().Set("a+b", result)
 }
