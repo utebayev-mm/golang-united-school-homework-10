@@ -24,7 +24,7 @@ func Start(host string, port int) {
 	router.HandleFunc("/name/{PARAM}", Name).Methods("GET")
 	router.HandleFunc("/bad", Bad).Methods("GET")
 	router.HandleFunc("/data", Data).Methods("POST")
-	router.HandleFunc("/header", Header).Methods("GET")
+	router.HandleFunc("/headers", Header).Methods("POST")
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
@@ -74,5 +74,5 @@ func Header(w http.ResponseWriter, r *http.Request) {
 	}
 	sum := a + b
 	result := strconv.Itoa(sum)
-	w.Header().Set("a+b", result)
+	w.Header().Set(("a+b"), result)
 }
