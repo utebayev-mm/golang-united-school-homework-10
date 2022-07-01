@@ -24,7 +24,7 @@ func Start(host string, port int) {
 	router.HandleFunc("/name/{PARAM}", Name).Methods("GET")
 	router.HandleFunc("/bad", Bad).Methods("GET")
 	router.HandleFunc("/data", Data).Methods("POST")
-	router.HandleFunc("/header", Header).Methods("POST")
+	router.HandleFunc("/header", Header).Methods("GET")
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
@@ -44,7 +44,7 @@ func main() {
 
 func Name(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)["PARAM"]
-	fmt.Fprint(w, "Hello "+param)
+	fmt.Fprintf(w, "Hello, %s!", param)
 }
 
 func Bad(w http.ResponseWriter, r *http.Request) {
@@ -61,19 +61,19 @@ func Data(w http.ResponseWriter, r *http.Request) {
 }
 
 func Header(w http.ResponseWriter, r *http.Request) {
-	a, err := strconv.Atoi(r.Header.Get("a"))
+	a, err := strconv.Atoi(r.Header.Get("A"))
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	b, err := strconv.Atoi(r.Header.Get("b"))
+	b, err := strconv.Atoi(r.Header.Get("B"))
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
+	fmt.Println(r.Header)
 	sum := a + b
-	result := strconv.Itoa(sum)
+	result := fmt.Sprint(sum)
 	w.Header().Add("a+b", result)
 }
