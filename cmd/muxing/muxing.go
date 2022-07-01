@@ -73,6 +73,6 @@ func Header(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sum := a + b
-	result := fmt.Sprint(sum)
+	result := strconv.Itoa(sum)
 	w.Header().Set("a+b", result)
 }
