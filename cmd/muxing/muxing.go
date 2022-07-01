@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +21,10 @@ main function reads host/port from env just for an example, flavor it following 
 // Start /** Starts the web server listener on given host and port.
 func Start(host string, port int) {
 	router := mux.NewRouter()
+	router.HandleFunc("/name/{PARAM}", Name).Methods("GET")
+	router.HandleFunc("/bad", Bad).Methods("GET")
+	router.HandleFunc("/data", Data).Methods("POST")
+	router.HandleFunc("/header", Header).Methods("POST")
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
@@ -35,4 +40,40 @@ func main() {
 		port = 8081
 	}
 	Start(host, port)
+}
+
+func Name(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)["PARAM"]
+	fmt.Fprint(w, "Hello "+param)
+}
+
+func Bad(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Status: 500", http.StatusInternalServerError)
+}
+
+func Data(w http.ResponseWriter, r *http.Request) {
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Fprintf(w, "I got message:\n%s", string(bytes))
+}
+
+func Header(w http.ResponseWriter, r *http.Request) {
+	a, err := strconv.Atoi(r.Header.Get("a"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	b, err := strconv.Atoi(r.Header.Get("b"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	sum := a + b
+	result := strconv.Itoa(sum)
+	w.Header().Add("a+b", result)
 }
